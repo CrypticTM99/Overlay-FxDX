@@ -1,4 +1,4 @@
--- name: OverlayFxDX-v1.0
+-- name: OverlayFxDX-v1.0.1-TESTING
 -- description: (Stable version, for now) for COOPDX 1.5.1, What does it do?: Overlays , with a fading menu , mobile support is added and functional on 1.3+ Android APK Tested by moi (myself) . 
 
 
@@ -6,12 +6,11 @@ if gGlobalSyncTable == nil then gGlobalSyncTable = {} end
 if gGlobalSyncTable.overlay_mode == nil then gGlobalSyncTable.overlay_mode = 0 end
 
 local prevPeriod = false
-local prevComma = false
+local prevComma = false  -- again, these arent needed, left from testing.
 
 local list_timer = 0
 local list_alpha = 0
 
-local mobile_pressed = false
 
 local function screen()
     return djui_hud_get_screen_width(), djui_hud_get_screen_height()
@@ -25,6 +24,7 @@ end
 
 local function off() end
 
+
 local function n64()
     local w,h = screen()
     rect(20,20,40,30)
@@ -33,13 +33,13 @@ local function n64()
     for y=0,h,3 do
         djui_hud_render_rect(0,y,w,1)
     end
-
-    rect(255,255,255,5)
 end
+
 
 local function bw()
     rect(120,120,120,35)
 end
+
 
 local function ps1()
     local w,h = screen()
@@ -51,6 +51,7 @@ local function ps1()
     end
 end
 
+
 local function vhs()
     local w,h = screen()
     rect(30,30,30,20)
@@ -61,15 +62,18 @@ local function vhs()
     end
 end
 
+
 local function green()
     rect(40,120,40,35)
 end
+
 
 local function invert()
     rect(255,255,255,20)
 end
 
-local function glitch()
+
+local function glitch()       -- here is the list of different overlays, add yours here if you'd like.
     local w,h = screen()
 
     for i=1,20 do
@@ -77,6 +81,7 @@ local function glitch()
         djui_hud_render_rect(math.random(0,w),math.random(0,h),120,2)
     end
 end
+
 
 local function crt()
     local w,h = screen()
@@ -87,9 +92,23 @@ local function crt()
     for y=0,h,2 do
         djui_hud_render_rect(0,y,w,1)
     end
-
-    rect(255,255,255,6)
 end
+
+
+local function blur()
+    local w,h = screen()
+
+    for i=1,6 do
+        djui_hud_set_color(255,255,255,10)
+        djui_hud_render_rect(
+            math.random(-5,5),
+            math.random(-5,5),
+            w,
+            h
+        )
+    end
+end
+
 
 local function draw_overlay()
     local m = gGlobalSyncTable.overlay_mode
@@ -103,8 +122,10 @@ local function draw_overlay()
     elseif m == 6 then invert()
     elseif m == 7 then glitch()
     elseif m == 8 then crt()
+    elseif m == 9 then blur() -- NEW
     end
 end
+
 
 local function trigger_list()
     list_timer = 90
@@ -113,17 +134,18 @@ end
 local function cycle_overlay(dir)
     gGlobalSyncTable.overlay_mode = gGlobalSyncTable.overlay_mode + dir
 
-    if gGlobalSyncTable.overlay_mode > 8 then
+    if gGlobalSyncTable.overlay_mode > 9 then
         gGlobalSyncTable.overlay_mode = 0
     end
 
     if gGlobalSyncTable.overlay_mode < 0 then
-        gGlobalSyncTable.overlay_mode = 8
+        gGlobalSyncTable.overlay_mode = 9
     end
 
     trigger_list()
 end
 
+--Note: prevPeriod and prevComma are left here from testing buttons on multiple layouts, this isnt needed for the mod to work for you
 hook_event(HOOK_UPDATE, function()
     local p = gMarioStates[0]
     if not p or not p.controller then return end
@@ -142,11 +164,8 @@ hook_event(HOOK_UPDATE, function()
         cycle_overlay(1)
     end
 
-    local period = (p.controller.buttonPressed & X_BUTTON) ~= 0 and _G._CRYPTIC_PERIOD_HELD
-    local comma = (p.controller.buttonPressed & Y_BUTTON) ~= 0 and _G._CRYPTIC_COMMA_HELD
-
-    if _G._CRYPTIC_PERIOD_HELD == nil then _G._CRYPTIC_PERIOD_HELD = false end
-    if _G._CRYPTIC_COMMA_HELD == nil then _G._CRYPTIC_COMMA_HELD = false end
+    local period = (p.controller.buttonPressed & X_BUTTON) ~= 0
+    local comma = (p.controller.buttonPressed & Y_BUTTON) ~= 0
 
     if period and not prevPeriod then
         cycle_overlay(1)
@@ -160,19 +179,24 @@ hook_event(HOOK_UPDATE, function()
     prevComma = comma
 end)
 
+-- this is where you can add your own overlays if you would like, feel free to change it up.
+-- keep in mind this is ONLY for the names (left corner of hud)
 local overlay_names = {
     "OFF/NORMAL",
     "N64 CRT",
     "WASHED COLORS",
-    "RETRO v1",
+    "RETRO v1 (CRT)",
     "VHS",
     "GREEN",
     "LOW-RES",
     "GLITCH",
-    "CRT (DARK)"
+    "CRT (DARK)",
+    "BLUR"
 }
 
+-- this is a basic hud addition for the cycle overlay
 hook_event(HOOK_ON_HUD_RENDER, function()
+
     draw_overlay()
 
     local w, h = screen()
@@ -208,12 +232,7 @@ hook_event(HOOK_ON_HUD_RENDER, function()
     if mx ~= -1 and my ~= -1 then
         if mx >= btn_x and mx <= btn_x + btn_w and my >= btn_y and my <= btn_y + btn_h then
             if (p and p.controller and (p.controller.buttonPressed & A_BUTTON) ~= 0) then
-                if not mobile_key then
-                    cycle_overlay(1)
-                    mobile_key = true
-                end
-            else
-                mobile_key = false --Old test, before mobile port added
+                cycle_overlay(1)
             end
         end
     end
@@ -223,9 +242,9 @@ hook_event(HOOK_ON_HUD_RENDER, function()
         local list_y = 145
 
         djui_hud_set_color(0,0,0,list_alpha)
-        djui_hud_render_rect(list_x, list_y, 180, 180)
+        djui_hud_render_rect(list_x, list_y, 180, 220)
 
-        for i = 0, 8 do
+        for i = 0, 9 do
             local y = list_y + 10 + (i * 18)
 
             if gGlobalSyncTable.overlay_mode == i then
@@ -247,5 +266,4 @@ hook_event(HOOK_ON_HUD_RENDER, function()
     end
 end)
 
-djui_chat_message_create("CRYPTICTM Overlay System Loaded (Mobile Support Enabled)")
--- removal of DEBUG from test build
+--removal of DEBUG print from testing build
