@@ -1,4 +1,4 @@
-Overlay FXDX v1.0 (Crafted by CrypticTM)
+Overlay FXDX v1.2.2 (Crafted by CrypticTM)
 
 Overlay FXDX is a real-time visual overlay system for SM64 CoopDX that adds retro and stylized display filters directly in-game. It is designed to be lightweight, simple to use, and easy to extend.
 
@@ -28,6 +28,8 @@ These include effects like:
 Retro CRT-style display
 Black & white filter (WIP)
 VHS-style distortion
+Warm/Cool Tint
+Buggy effects
 Glitch effects
 Other stylized overlays
 
@@ -35,8 +37,5 @@ The effects are purely visual and do not affect gameplay.
 
 Controls
 L Trigger – Cycle overlay modes
-. (Period) – Next overlay (keyboard) (Set to different binding)
-, (Comma) – Previous overlay (keyboard) (Set to different binding, confliction with default controls on QWERTY Keyboard)
-On-screen Overlay Button (Mobile) – Tap to cycle overlays
 
 When you change an overlay, the selection menu appears briefly on screen and then fades out automatically.
