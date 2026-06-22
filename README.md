@@ -1,4 +1,4 @@
-Overlay FXDX v1.2.2 (Crafted by CrypticTM)
+Overlay FXDX v1.1.2 (Crafted by CrypticTM)
 
 Overlay FXDX is a real-time visual overlay system for SM64 CoopDX that adds retro and stylized display filters directly in-game. It is designed to be lightweight, simple to use, and easy to extend.
 
