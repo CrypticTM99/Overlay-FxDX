@@ -1,4 +1,4 @@
--- name: OverlayFxDX-v1.2.2
+-- name: OverlayFxDX-v1.1.2
 -- description: Overlay system for COOPDX 1.5.1, Created by CrypticTM
 
 if gGlobalSyncTable == nil then gGlobalSyncTable = {} end
