@@ -1,16 +1,14 @@
--- name: OverlayFxDX-v1.0.1-TESTING
--- description: (Stable version, for now) for COOPDX 1.5.1, What does it do?: Overlays , with a fading menu , mobile support is added and functional on 1.3+ Android APK Tested by moi (myself) . 
-
+-- name: OverlayFxDX-v1.2.2
+-- description: Overlay system for COOPDX 1.5.1, Created by CrypticTM
 
 if gGlobalSyncTable == nil then gGlobalSyncTable = {} end
 if gGlobalSyncTable.overlay_mode == nil then gGlobalSyncTable.overlay_mode = 0 end
 
 local prevPeriod = false
-local prevComma = false  -- again, these arent needed, left from testing.
+local prevComma = false
 
 local list_timer = 0
 local list_alpha = 0
-
 
 local function screen()
     return djui_hud_get_screen_width(), djui_hud_get_screen_height()
@@ -24,7 +22,6 @@ end
 
 local function off() end
 
-
 local function n64()
     local w,h = screen()
     rect(20,20,40,30)
@@ -35,11 +32,9 @@ local function n64()
     end
 end
 
-
 local function bw()
     rect(120,120,120,35)
 end
-
 
 local function ps1()
     local w,h = screen()
@@ -51,41 +46,51 @@ local function ps1()
     end
 end
 
-
+-- I'm going to work on vhs and give better visibilty on effect change
 local function vhs()
     local w,h = screen()
-    rect(30,30,30,20)
 
-    djui_hud_set_color(255,255,255,10)
-    for i=1,25 do
-        djui_hud_render_rect(0, math.random(0,h), w, 1)
+    rect(35,35,35,22)
+
+    -- I'll update this later
+    for i=1,12 do
+        local offset = math.random(-6,6)
+        djui_hud_set_color(255,255,255,10)
+        djui_hud_render_rect(offset, math.random(0,h), w, 1)
+    end
+
+    -- noise test
+    for i=1,10 do
+        djui_hud_set_color(200,200,200,6)
+        djui_hud_render_rect(0, math.random(0,h), w, 2)
+    end
+
+    -- scanline breakup
+    djui_hud_set_color(0,0,0,25)
+    for y=0,h,4 do
+        djui_hud_render_rect(0,y + math.random(-1,1), w, 1)
     end
 end
-
 
 local function green()
     rect(40,120,40,35)
 end
 
-
 local function invert()
     rect(255,255,255,20)
 end
 
-
-local function glitch()       -- here is the list of different overlays, add yours here if you'd like.
+local function glitch()
     local w,h = screen()
 
-    for i=1,20 do
+    for i=1,18 do
         djui_hud_set_color(math.random(0,255),0,math.random(0,255),40)
         djui_hud_render_rect(math.random(0,w),math.random(0,h),120,2)
     end
 end
 
-
 local function crt()
     local w,h = screen()
-
     rect(10,10,20,35)
 
     djui_hud_set_color(0,0,0,45)
@@ -94,21 +99,113 @@ local function crt()
     end
 end
 
-
 local function blur()
     local w,h = screen()
 
+    rect(255,245,220,6)
+
+    djui_hud_set_color(0,0,0,35)
+    djui_hud_render_rect(-10,0,20,h)
+    djui_hud_render_rect(w-10,0,20,h)
+
+    djui_hud_set_color(255,255,255,8)
+    djui_hud_render_rect(1,0,w,h)
+    djui_hud_render_rect(-1,0,w,h)
+
+    djui_hud_set_color(0,0,0,35)
+    for y=0,h,3 do
+        djui_hud_render_rect(0,y,w,1)
+    end
+
+    djui_hud_set_color(255,220,120,18)
+    for i=1,12 do
+        djui_hud_render_rect(0 + i*2, 0 + i, w*0.6, 2)
+    end
+end
+
+local function noir()
+    local w,h = screen()
+
+    for y=0,h,2 do
+        local lum = math.random(40,220)
+        djui_hud_set_color(lum,lum,lum,20)
+        djui_hud_render_rect(0,y,w,2)
+    end
+
+    djui_hud_set_color(0,0,0,10)
+    djui_hud_render_rect(0,0,w,h)
+end
+
+local function heat()
+    local w,h = screen()
+
+    djui_hud_set_color(120,40,10,25)
+    djui_hud_render_rect(0,0,w,h)
+
+    for i=1,18 do
+        djui_hud_set_color(255, math.random(80,140), 40, 25)
+        djui_hud_render_rect(math.random(-2,2), math.random(0,h), w, 2)
+    end
+
     for i=1,6 do
-        djui_hud_set_color(255,255,255,10)
+        djui_hud_set_color(255,120,60,12)
+        djui_hud_render_rect(math.random(-4,4), math.random(-4,4), w, h)
+    end
+end
+
+local function underwater()
+    local w,h = screen()
+
+    rect(0,120,200,22)
+
+    djui_hud_set_color(120,180,255,14)
+    djui_hud_render_rect(0,0,w,h)
+
+    djui_hud_set_color(80,140,255,10)
+    djui_hud_render_rect(0,0,w,h)
+
+    djui_hud_set_color(200,230,255,12)
+    for i=1,14 do
         djui_hud_render_rect(
-            math.random(-5,5),
-            math.random(-5,5),
-            w,
-            h
+            math.random(0,w),
+            math.random(0,h),
+            2,
+            2
         )
     end
 end
 
+local function neon()
+    local w,h = screen()
+
+    for x=0,w,40 do
+        for glow=1,3 do
+            djui_hud_set_color(0,255,255,10 - glow * 2)
+            djui_hud_render_rect(x - glow, 0, 2 + glow*2, h)
+        end
+    end
+
+    for y=0,h,30 do
+        for glow=1,3 do
+            djui_hud_set_color(255,0,255,10 - glow * 2)
+            djui_hud_render_rect(0, y - glow, w, 2 + glow*2)
+        end
+    end
+end
+
+local function broken()
+    local w,h = screen()
+
+    for i=1,25 do
+        djui_hud_set_color(math.random(0,255),math.random(0,255),math.random(0,255),20)
+        djui_hud_render_rect(math.random(0,w),math.random(0,h),math.random(20,120),2)
+    end
+
+    for i=1,120 do
+        djui_hud_set_color(0,0,0,255)
+        djui_hud_render_rect(math.random(0,w),math.random(0,h),math.random(2,6),math.random(2,6))
+    end
+end
 
 local function draw_overlay()
     local m = gGlobalSyncTable.overlay_mode
@@ -122,10 +219,14 @@ local function draw_overlay()
     elseif m == 6 then invert()
     elseif m == 7 then glitch()
     elseif m == 8 then crt()
-    elseif m == 9 then blur() -- NEW
+    elseif m == 9 then blur()
+    elseif m == 10 then noir()
+    elseif m == 11 then heat()
+    elseif m == 12 then underwater()
+    elseif m == 13 then neon()
+    elseif m == 14 then broken()
     end
 end
-
 
 local function trigger_list()
     list_timer = 90
@@ -134,27 +235,18 @@ end
 local function cycle_overlay(dir)
     gGlobalSyncTable.overlay_mode = gGlobalSyncTable.overlay_mode + dir
 
-    if gGlobalSyncTable.overlay_mode > 9 then
-        gGlobalSyncTable.overlay_mode = 0
-    end
-
-    if gGlobalSyncTable.overlay_mode < 0 then
-        gGlobalSyncTable.overlay_mode = 9
-    end
+    if gGlobalSyncTable.overlay_mode > 14 then gGlobalSyncTable.overlay_mode = 0 end
+    if gGlobalSyncTable.overlay_mode < 0 then gGlobalSyncTable.overlay_mode = 14 end
 
     trigger_list()
 end
 
---Note: prevPeriod and prevComma are left here from testing buttons on multiple layouts, this isnt needed for the mod to work for you
 hook_event(HOOK_UPDATE, function()
     local p = gMarioStates[0]
     if not p or not p.controller then return end
 
     if list_timer > 0 then
         list_timer = list_timer - 1
-    end
-
-    if list_timer > 0 then
         list_alpha = math.min(list_alpha + 20, 180)
     else
         list_alpha = math.max(list_alpha - 15, 0)
@@ -167,20 +259,13 @@ hook_event(HOOK_UPDATE, function()
     local period = (p.controller.buttonPressed & X_BUTTON) ~= 0
     local comma = (p.controller.buttonPressed & Y_BUTTON) ~= 0
 
-    if period and not prevPeriod then
-        cycle_overlay(1)
-    end
-
-    if comma and not prevComma then
-        cycle_overlay(-1)
-    end
+    if period and not prevPeriod then cycle_overlay(1) end
+    if comma and not prevComma then cycle_overlay(-1) end
 
     prevPeriod = period
     prevComma = comma
 end)
 
--- this is where you can add your own overlays if you would like, feel free to change it up.
--- keep in mind this is ONLY for the names (left corner of hud)
 local overlay_names = {
     "OFF/NORMAL",
     "N64 CRT",
@@ -191,15 +276,19 @@ local overlay_names = {
     "LOW-RES",
     "GLITCH",
     "CRT (DARK)",
-    "BLUR"
+    "BLUR",
+    "FILM",
+    "HEAT HAZE",
+    "UNDERWATER",
+    "GRIDLOCK",
+    "FUZZY SIGNAL"
 }
 
--- this is a basic hud addition for the cycle overlay
 hook_event(HOOK_ON_HUD_RENDER, function()
 
     draw_overlay()
 
-    local w, h = screen()
+    local w,h = screen()
 
     local box_x = 20
     local box_y = (h * 0.76) + 35
@@ -215,8 +304,7 @@ hook_event(HOOK_ON_HUD_RENDER, function()
         0.6
     )
 
-    local btn_w = 120
-    local btn_h = 50
+    local btn_w, btn_h = 120, 50
     local btn_x = w - btn_w - 20
     local btn_y = h - btn_h - 20
 
@@ -226,12 +314,13 @@ hook_event(HOOK_ON_HUD_RENDER, function()
     djui_hud_set_color(255,255,255,255)
     djui_hud_print_text("OVERLAY", btn_x + 25, btn_y + 18, 0.7)
 
+    local p = gMarioStates[0]
     local mx = djui_hud_get_mouse_x and djui_hud_get_mouse_x() or -1
     local my = djui_hud_get_mouse_y and djui_hud_get_mouse_y() or -1
 
-    if mx ~= -1 and my ~= -1 then
+    if p and mx ~= -1 and my ~= -1 then
         if mx >= btn_x and mx <= btn_x + btn_w and my >= btn_y and my <= btn_y + btn_h then
-            if (p and p.controller and (p.controller.buttonPressed & A_BUTTON) ~= 0) then
+            if p.controller and (p.controller.buttonPressed & A_BUTTON) ~= 0 then
                 cycle_overlay(1)
             end
         end
@@ -242,10 +331,10 @@ hook_event(HOOK_ON_HUD_RENDER, function()
         local list_y = 145
 
         djui_hud_set_color(0,0,0,list_alpha)
-        djui_hud_render_rect(list_x, list_y, 180, 220)
+        djui_hud_render_rect(list_x, list_y, 180, 260)
 
-        for i = 0, 9 do
-            local y = list_y + 10 + (i * 18)
+        for i = 0, 14 do
+            local y = list_y + 10 + (i * 16)
 
             if gGlobalSyncTable.overlay_mode == i then
                 djui_hud_set_color(80,220,120,list_alpha)
@@ -265,5 +354,3 @@ hook_event(HOOK_ON_HUD_RENDER, function()
         end
     end
 end)
-
---removal of DEBUG print from testing build
