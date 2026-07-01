@@ -35,6 +35,9 @@ Other stylized overlays
 
 The effects are purely visual and do not affect gameplay.
 
+Contributors: 
+Esscey (n3yne) - Settings Menu Hook + 
+
 Controls
 L Trigger – Cycle overlay modes
 
