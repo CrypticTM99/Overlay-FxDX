@@ -4,6 +4,14 @@
 if gGlobalSyncTable == nil then gGlobalSyncTable = {} end
 if gGlobalSyncTable.overlay_mode == nil then gGlobalSyncTable.overlay_mode = 0 end
 
+local showUI = false
+local keybindsEnabled = true
+
+local overlay_names = {
+    "OFF/NORMAL", "N64 CRT", "WASHED COLORS", "RETRO v1 (CRT)", "VHS",
+    "GREEN", "LOW-RES", "GLITCH", "CRT (DARK)", "BLUR",
+    "FILM", "HEAT HAZE", "UNDERWATER", "GRIDLOCK", "FUZZY SIGNAL"
+}
 local prevPeriod = false
 local prevComma = false
 
@@ -252,105 +260,102 @@ hook_event(HOOK_UPDATE, function()
         list_alpha = math.max(list_alpha - 15, 0)
     end
 
-    if (p.controller.buttonPressed & L_TRIG) ~= 0 then
-        cycle_overlay(1)
+    if keybindsEnabled then
+        if (p.controller.buttonPressed & L_TRIG) ~= 0 then
+            cycle_overlay(1)
+        end
+
+        local period = (p.controller.buttonPressed & X_BUTTON) ~= 0
+        local comma = (p.controller.buttonPressed & Y_BUTTON) ~= 0
+
+        if period and not prevPeriod then cycle_overlay(1) end
+        if comma and not prevComma then cycle_overlay(-1) end
+
+        prevPeriod = period
+        prevComma = comma
     end
-
-    local period = (p.controller.buttonPressed & X_BUTTON) ~= 0
-    local comma = (p.controller.buttonPressed & Y_BUTTON) ~= 0
-
-    if period and not prevPeriod then cycle_overlay(1) end
-    if comma and not prevComma then cycle_overlay(-1) end
-
-    prevPeriod = period
-    prevComma = comma
 end)
 
-local overlay_names = {
-    "OFF/NORMAL",
-    "N64 CRT",
-    "WASHED COLORS",
-    "RETRO v1 (CRT)",
-    "VHS",
-    "GREEN",
-    "LOW-RES",
-    "GLITCH",
-    "CRT (DARK)",
-    "BLUR",
-    "FILM",
-    "HEAT HAZE",
-    "UNDERWATER",
-    "GRIDLOCK",
-    "FUZZY SIGNAL"
-}
-
 hook_event(HOOK_ON_HUD_RENDER, function()
-
     draw_overlay()
 
-    local w,h = screen()
+    if showUI then
+        local w, h = screen()
+        local box_x = 20
+        local box_y = (h * 0.76) + 35
 
-    local box_x = 20
-    local box_y = (h * 0.76) + 35
+        djui_hud_set_color(0, 0, 0, 140)
+        djui_hud_render_rect(box_x, box_y, 200, 40)
 
-    djui_hud_set_color(0,0,0,140)
-    djui_hud_render_rect(box_x, box_y, 260, 40)
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_print_text(
+            "L = Cycle Overlay | Mode: " .. overlay_names[gGlobalSyncTable.overlay_mode + 1],
+            box_x + 10,
+            box_y + 12,
+            0.6
+        )
 
-    djui_hud_set_color(255,255,255,255)
-    djui_hud_print_text(
-        "L = Cycle Overlay | Mode: " .. overlay_names[gGlobalSyncTable.overlay_mode + 1],
-        box_x + 10,
-        box_y + 12,
-        0.6
-    )
+        local btn_w, btn_h = 120, 50
+        local btn_x = w - btn_w - 20
+        local btn_y = h - btn_h - 20
 
-    local btn_w, btn_h = 120, 50
-    local btn_x = w - btn_w - 20
-    local btn_y = h - btn_h - 20
+        djui_hud_set_color(0, 0, 0, 160)
+        djui_hud_render_rect(btn_x, btn_y, btn_w, btn_h)
 
-    djui_hud_set_color(0,0,0,160)
-    djui_hud_render_rect(btn_x, btn_y, btn_w, btn_h)
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_print_text("OVERLAY", btn_x + 25, btn_y + 18, 0.7)
 
-    djui_hud_set_color(255,255,255,255)
-    djui_hud_print_text("OVERLAY", btn_x + 25, btn_y + 18, 0.7)
+        local p = gMarioStates[0]
+        local mx = djui_hud_get_mouse_x and djui_hud_get_mouse_x() or -1
+        local my = djui_hud_get_mouse_y and djui_hud_get_mouse_y() or -1
 
-    local p = gMarioStates[0]
-    local mx = djui_hud_get_mouse_x and djui_hud_get_mouse_x() or -1
-    local my = djui_hud_get_mouse_y and djui_hud_get_mouse_y() or -1
+        if p and mx ~= -1 and my ~= -1 then
+            if mx >= btn_x and mx <= btn_x + btn_w and my >= btn_y and my <= btn_y + btn_h then
+                if p.controller and (p.controller.buttonPressed & A_BUTTON) ~= 0 then
+                    cycle_overlay(1)
+                end
+            end
+        end
 
-    if p and mx ~= -1 and my ~= -1 then
-        if mx >= btn_x and mx <= btn_x + btn_w and my >= btn_y and my <= btn_y + btn_h then
-            if p.controller and (p.controller.buttonPressed & A_BUTTON) ~= 0 then
-                cycle_overlay(1)
+        if list_alpha > 0 then
+            local list_x = 20
+            local list_y = 145
+
+            djui_hud_set_color(0, 0, 0, list_alpha)
+            djui_hud_render_rect(list_x, list_y, 180, 260)
+
+            for i = 0, 14 do
+                local y = list_y + 10 + (i * 16)
+
+                if gGlobalSyncTable.overlay_mode == i then
+                    djui_hud_set_color(80, 220, 120, list_alpha)
+                else
+                    djui_hud_set_color(200, 200, 200, list_alpha)
+                end
+
+                djui_hud_render_rect(list_x + 5, y, 170, 14)
+
+                djui_hud_set_color(255, 255, 255, list_alpha)
+                djui_hud_print_text(
+                    overlay_names[i + 1],
+                    list_x + 10,
+                    y + 3,
+                    0.7
+                )
             end
         end
     end
+end)
 
-    if list_alpha > 0 then
-        local list_x = 20
-        local list_y = 145
-
-        djui_hud_set_color(0,0,0,list_alpha)
-        djui_hud_render_rect(list_x, list_y, 180, 260)
-
-        for i = 0, 14 do
-            local y = list_y + 10 + (i * 16)
-
-            if gGlobalSyncTable.overlay_mode == i then
-                djui_hud_set_color(80,220,120,list_alpha)
-            else
-                djui_hud_set_color(200,200,200,list_alpha)
-            end
-
-            djui_hud_render_rect(list_x + 5, y, 170, 14)
-
-            djui_hud_set_color(255,255,255,list_alpha)
-            djui_hud_print_text(
-                overlay_names[i + 1],
-                list_x + 10,
-                y + 3,
-                0.7
-            )
-        end
-    end
+hook_mod_menu_checkbox("Show Mode Indicator", false, function(index, value)
+    showUI = value
+end)
+hook_mod_menu_checkbox("Enable Keybindings", true, function(index, value)
+    keybindsEnabled = value
+end)
+hook_mod_menu_text("0=Off  1=N64 CRT  2=Washed  3=Retro CRT  4=VHS")
+hook_mod_menu_text("5=Green  6=Low-Res  7=Glitch  8=CRT Dark  9=Blur")
+hook_mod_menu_text("10=Film  11=Heat Haze  12=Underwater  13=Gridlock  14=Fuzzy")
+hook_mod_menu_slider("Filter Mode", 0, 0, 14, function(index, value)
+    gGlobalSyncTable.overlay_mode = value
 end)
