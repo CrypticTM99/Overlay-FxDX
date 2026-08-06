@@ -1,4 +1,5 @@
-Overlay FXDX v1.1.3  (Latest) (Crafted by CrypticTM)
+**OverlayFxDX v1.2.0**  (Latest) (Crafted by CrypticTM)
+
 
 
 Overlay FXDX is a real-time visual overlay system for SM64 CoopDX that adds retro and stylized display filters directly in-game. It is designed to be lightweight, simple to use, and easy to extend.
@@ -26,28 +27,31 @@ Overlay FXDX lets you change how the game looks in real time using simple visual
 
 These include effects like:
 
-Retro CRT-style display
+*Retro CRT-style display
 Black \& white filter (WIP)
 VHS-style distortion
 Warm/Cool Tint
 Buggy effects
 Glitch effects
-Other stylized overlays
+Other stylized overlays*
 
 
-The effects are purely visual and do not affect gameplay.
+
+**The effects are purely visual and do not affect gameplay.**
+
 
 
 Controls:
 L Trigger – Cycle overlay modes
 
-When you change an overlay, the selection menu appears briefly on screen and then fades out automatically. You can also toggle filters via the mod menu. 
+When you change an overlay, the selection menu appears briefly on screen and then fades out automatically. You can also toggle filters via the mod menu.
+
 
 Contributors:
-Esscey (n3yne) - Settings Menu Hook +
+Esscey (n3yne) - Settings Menu Hook + (v1.1.3)
 
 
- 
+
 \*Epilepsy Warning\*:
 
 OverlayFxDX contains visual effects that may include flashing lights, rapid color changes, screen distortion, animated overlays, and other intense visual elements.
