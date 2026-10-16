@@ -1,14 +1,9 @@
-
-- OverlayFXDX 1.2.0 
-
-- Added
-
+* OverlayFXDX 1.2.0
+* Working on performance and also fixing up bugs for 1.2.1
 * Added 2 new overlays.
 * Added the version number to the screen
 * Added support for older devices.
-
-- Changes
-
+* Changes
 * Replaced the "Low-Res" overlay.
 * Reduced draw calls across all overlays.
 * Reduced "Fuzzy Signal" static from 120 particles to 40.
@@ -18,3 +13,4 @@
 * Reduced "underwater" bubble count. (This was mostly a test to see if I could get it working when Mario hit water)
 * Reduced "heat haze" wave count.
 * Improved overall performance.
+
